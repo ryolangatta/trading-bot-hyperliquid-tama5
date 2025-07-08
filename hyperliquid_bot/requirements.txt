@@ -1,0 +1,45 @@
+# Hyperliquid Trading Bot Dependencies
+# Python 3.12+ compatible versions for production deployment
+
+# Core dependencies
+asyncio-mqtt>=0.13.0
+aiohttp>=3.9.1
+aiofiles>=23.2.1
+
+# Environment and configuration
+python-dotenv>=1.0.0
+
+# Mathematical and data processing
+numpy>=1.26.0
+pandas>=2.1.0
+
+# Plotting and charting for Discord ROI graphs
+matplotlib>=3.8.0
+
+# Hyperliquid SDK (official)
+hyperliquid-python-sdk>=0.16.0
+
+# Cryptography and security
+cryptography>=41.0.0
+
+# HTTP client libraries
+requests>=2.31.0
+urllib3>=2.1.0
+
+# Date and time handling
+python-dateutil>=2.8.0
+
+# JSON and data serialization
+orjson>=3.9.0
+
+# For robust async operations
+tenacity>=8.2.0
+
+# Memory optimization
+psutil>=5.9.0
+
+# For timezone handling
+pytz>=2023.3
+
+# Ethereum account management
+eth-account>=0.13.0

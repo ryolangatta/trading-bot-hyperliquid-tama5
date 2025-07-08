@@ -1,0 +1,75 @@
+# Render.com deployment configuration
+# Reference: https://render.com/docs/render-yaml-spec
+
+services:
+  - type: worker  # Background worker for 24/7 trading
+    name: hyperliquid-trading-bot
+    env: python
+    runtime: python3
+    buildCommand: pip install -r requirements.txt
+    startCommand: python main.py --strategy rsi_pengu
+    # Render background worker configuration
+    
+    # Environment variables (set these in Render dashboard)
+    envVars:
+      - key: DRY_RUN
+        value: false
+      - key: TESTNET
+        value: false
+      - key: STRATEGY_NAME
+        value: rsi_pengu
+      - key: SYMBOL
+        value: PENGU
+      - key: TIMEFRAME
+        value: 30m
+      - key: RSI_PERIOD
+        value: 14
+      - key: RSI_OVERSOLD
+        value: 30
+      - key: RSI_OVERBOUGHT
+        value: 70
+      - key: LEVERAGE
+        value: 10
+      - key: POSITION_SIZE_PERCENT
+        value: 1.0
+      - key: STOP_LOSS_PERCENT
+        value: 2.5
+      - key: CIRCUIT_BREAKER_ERRORS
+        value: 5
+      - key: CIRCUIT_BREAKER_WINDOW_HOURS
+        value: 1
+      - key: RETRY_ATTEMPTS
+        value: 3
+      - key: RETRY_DELAY
+        value: 1.0
+      - key: DISCORD_STATUS_INTERVAL
+        value: 600
+      - key: DISCORD_ROI_INTERVAL
+        value: 3600
+      - key: LOG_LEVEL
+        value: INFO
+      - key: LOG_FILE
+        value: logs/bot.log
+      - key: LOG_MAX_SIZE
+        value: 5242880
+      - key: LOG_BACKUP_COUNT
+        value: 3
+      - key: STATE_FILE
+        value: state/bot_state.json
+      - key: ROI_FILE
+        value: state/roi_data.json
+        
+    # Secret environment variables (set in Render dashboard)
+    # - HYPERLIQUID_PRIVATE_KEY
+    # - DISCORD_WEBHOOK_URL
+    # - HYPERLIQUID_VAULT_ADDRESS (optional)
+    
+    # Resource allocation
+    region: oregon
+    plan: starter
+    
+    # Auto-deploy settings
+    autoDeploy: false
+    
+    # Health check (optional)
+    healthCheckPath: /health
