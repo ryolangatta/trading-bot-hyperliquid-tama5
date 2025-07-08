@@ -550,7 +550,8 @@ class BotOrchestrator:
                 action='SELL',
                 price=current_price,
                 timestamp=datetime.now(),
-                rsi_value=0,
+                stoch_rsi_value=self.strategy.get_current_stoch_rsi() or 0,
+                rsi_value=self.strategy.get_current_rsi() or 0,
                 confidence=1.0,
                 reason="Stop loss triggered"
             )
@@ -571,6 +572,7 @@ class BotOrchestrator:
                 action=manual_signal.command,  # 'BUY' or 'SELL'
                 price=current_price,
                 timestamp=datetime.now(),
+                stoch_rsi_value=self.strategy.get_current_stoch_rsi() or 0,
                 rsi_value=self.strategy.get_current_rsi() or 0,
                 confidence=1.0,
                 reason=f"Manual command from {manual_signal.username}"

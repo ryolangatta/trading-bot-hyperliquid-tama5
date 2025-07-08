@@ -191,7 +191,9 @@ class DiscordNotifier:
                 return
                 
             # Handle None values safely
+            current_stoch_rsi = status_data.get('current_stoch_rsi')
             current_rsi = status_data.get('current_rsi')
+            stoch_rsi_display = f"{current_stoch_rsi:.2f}" if current_stoch_rsi is not None else "Calculating..."
             rsi_display = f"{current_rsi:.2f}" if current_rsi is not None else "Calculating..."
             
             # Format wallet balance
@@ -203,7 +205,8 @@ class DiscordNotifier:
                 "Mode": "📊 LIVE" if not self.config.dry_run else "🧪 DRY RUN",
                 "Environment": "🌐 MAINNET" if not self.config.testnet else "🧪 TESTNET",
                 "Strategy": status_data.get('strategy', 'N/A'),
-                "Current RSI": rsi_display,
+                "Stochastic RSI": stoch_rsi_display,
+                "RSI": rsi_display,
                 "Position": "📈 LONG" if status_data.get('has_position') else "💰 NO POSITION",
                 "Wallet Balance": f"${wallet_balance:,.2f} USDT",
                 "Available": f"${available_balance:,.2f} USDT",

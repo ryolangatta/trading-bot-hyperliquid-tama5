@@ -37,7 +37,8 @@ class Config:
         self.stoch_period: int = int(os.getenv('STOCH_PERIOD', '14'))
         self.stoch_rsi_oversold: float = float(os.getenv('STOCH_RSI_OVERSOLD', '20'))
         self.stoch_rsi_overbought: float = float(os.getenv('STOCH_RSI_OVERBOUGHT', '80'))
-        # Legacy RSI parameters (kept for backward compatibility)
+        # Legacy RSI parameters (DEPRECATED - use STOCH_RSI parameters instead)
+        # Kept for backward compatibility only - will be removed in future versions
         self.rsi_oversold: float = float(os.getenv('RSI_OVERSOLD', '30'))
         self.rsi_overbought: float = float(os.getenv('RSI_OVERBOUGHT', '70'))
         
@@ -100,11 +101,15 @@ class Config:
         if self.stoch_rsi_oversold >= self.stoch_rsi_overbought:
             errors.append("STOCH_RSI_OVERSOLD must be less than STOCH_RSI_OVERBOUGHT")
             
-        # Legacy RSI validation (kept for backward compatibility)
+        # Legacy RSI validation (DEPRECATED - kept for backward compatibility)
         if not (0 < self.rsi_oversold < 100):
+            import logging
+            logging.warning("RSI_OVERSOLD parameter is deprecated, use STOCH_RSI_OVERSOLD instead")
             errors.append("RSI_OVERSOLD must be between 0 and 100")
             
         if not (0 < self.rsi_overbought < 100):
+            import logging
+            logging.warning("RSI_OVERBOUGHT parameter is deprecated, use STOCH_RSI_OVERBOUGHT instead")
             errors.append("RSI_OVERBOUGHT must be between 0 and 100")
             
         if self.rsi_oversold >= self.rsi_overbought:

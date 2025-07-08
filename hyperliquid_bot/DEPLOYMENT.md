@@ -3,7 +3,7 @@
 ## Quick Deploy Checklist
 
 ### ✅ Repository Ready
-- [x] Code pushed to GitHub: https://github.com/ryolangatta/trading-bot-hyperliquid-tama4
+- [x] Code pushed to GitHub: https://github.com/ryolangatta/trading-bot-hyperliquid-tama5
 - [x] All dependencies in requirements.txt
 - [x] render.yaml configuration file included
 - [x] .env.template provided for configuration reference
@@ -24,7 +24,7 @@
 #### Step 1: Create New Service
 1. Login to Render.com
 2. Click "New +" → "Background Worker"
-3. Connect GitHub → Select "trading-bot-hyperliquid-tama4"
+3. Connect GitHub → Select "trading-bot-hyperliquid-tama5"
 4. **Service Configuration**:
    - **Name**: `hyperliquid-trading-bot`
    - **Environment**: `Python 3`
@@ -52,8 +52,9 @@ STRATEGY_NAME=rsi_pengu
 SYMBOL=PENGU
 TIMEFRAME=30m
 RSI_PERIOD=14
-RSI_OVERSOLD=30
-RSI_OVERBOUGHT=70
+STOCH_PERIOD=14
+STOCH_RSI_OVERSOLD=20
+STOCH_RSI_OVERBOUGHT=80
 ```
 
 **API Credentials** (CRITICAL - Keep Secret):
@@ -85,7 +86,7 @@ DISCORD_ROI_INTERVAL=3600
 - [ ] Bot startup notification in Discord
 - [ ] No error messages in Render logs
 - [ ] Market data being fetched successfully
-- [ ] RSI calculations working
+- [ ] Stochastic RSI calculations working
 
 #### Daily Monitoring
 - [ ] Discord status updates every 10 minutes
@@ -145,7 +146,7 @@ DISCORD_ROI_INTERVAL=3600
 
 ## 🎯 You're Ready to Deploy!
 
-Your Hyperliquid Trading Bot v5.0.0 is production-ready with:
+Your Hyperliquid Trading Bot v5.2.0 is production-ready with:
 - Professional-grade architecture ✅
 - Security-hardened code ✅  
 - Comprehensive error handling ✅
