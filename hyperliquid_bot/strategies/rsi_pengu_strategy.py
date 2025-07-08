@@ -1,5 +1,5 @@
 """
-Stochastic RSI Strategy for PENGU
+Stochastic RSI Strategy for LINK
 Long only strategy using Stochastic RSI indicator for entry/exit signals
 """
 
@@ -35,14 +35,14 @@ class Candle:
 
 
 class StochasticRSIStrategy:
-    """Stochastic RSI Strategy for PENGU token"""
+    """Stochastic RSI Strategy for LINK token"""
     
     def __init__(self, config):
         self.config = config
         self.logger = logging.getLogger(__name__)
         
         # Hardcoded symbol and timeframe as per CLAUDE.md specification
-        self.symbol = "PENGU"
+        self.symbol = "LINK"
         self.timeframe = "30m"
         self.rsi_period = 14  # Fixed RSI period
         self.stoch_period = 14  # Fixed Stochastic period
@@ -63,7 +63,7 @@ class StochasticRSIStrategy:
         self.current_position = None
         self.last_signal = None
         
-        self.logger.info(f"Stochastic RSI PENGU Strategy initialized")
+        self.logger.info(f"Stochastic RSI LINK Strategy initialized")
         self.logger.info(f"Symbol: {self.symbol}, Timeframe: {self.timeframe}")
         self.logger.info(f"RSI Period: {self.rsi_period}, Stochastic Period: {self.stoch_period}")
         self.logger.info(f"Stochastic RSI Oversold: {self.stoch_rsi_oversold}, Overbought: {self.stoch_rsi_overbought}")
@@ -298,7 +298,7 @@ class StochasticRSIStrategy:
     def get_strategy_status(self) -> Dict:
         """Get current strategy status"""
         return {
-            'strategy_name': 'STOCHASTIC_RSI_PENGU',
+            'strategy_name': 'STOCHASTIC_RSI_LINK',
             'symbol': self.symbol,
             'timeframe': self.timeframe,
             'current_rsi': self.get_current_rsi(),

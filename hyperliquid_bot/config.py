@@ -29,7 +29,7 @@ class Config:
         
         # Strategy configuration
         self.strategy_name: str = os.getenv('STRATEGY_NAME', 'rsi_pengu')
-        self.symbol: str = os.getenv('SYMBOL', 'PENGU')
+        self.symbol: str = os.getenv('SYMBOL', 'LINK')
         self.timeframe: str = os.getenv('TIMEFRAME', '30m')
         
         # Stochastic RSI Strategy parameters

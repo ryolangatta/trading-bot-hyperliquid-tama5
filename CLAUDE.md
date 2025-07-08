@@ -38,9 +38,9 @@ Build a secure, professional-grade execution-only crypto trading bot for Hyperli
 
 ---
 
-## 📊 Active Strategy: Stochastic RSI on PENGU
+## 📊 Active Strategy: Stochastic RSI on LINK
 
-**Token:** PENGU  
+**Token:** LINK  
 **Timeframe:** 30-minute candles  
 **Position Type:** Long only  
 **Indicators:** Stochastic RSI (combining RSI and Stochastic)
@@ -57,6 +57,11 @@ Build a secure, professional-grade execution-only crypto trading bot for Hyperli
 - Oversold Threshold: 20
 - Overbought Threshold: 80
 
+### Strategy Mechanics
+The StochasticRSI combines two momentum indicators:
+1. RSI (14-period): Measures price momentum
+2. Stochastic (14-period): Applied to RSI values for enhanced sensitivity
+
 ### Risk Management
 - Stop Loss: 2–3% below entry (recommended)
 - Position Sizing: Fixed dollar amounts OR percentage-based (configurable)
@@ -71,7 +76,7 @@ Build a secure, professional-grade execution-only crypto trading bot for Hyperli
 - Total Return: +130.14%
 - Sharpe: 1.56 (excellent risk-adjusted returns)
 - Max Drawdown: -24.36%
-- Win/Loss Ratio: 6.50
+- Win/Loss Ratio: 6.50 (much more winning than losing trades)
 
 ---
 
@@ -139,7 +144,7 @@ hyperliquid_bot/
 ├── config.py                        # Configuration management
 ├── bot_orchestrator.py             # Main bot coordination
 ├── strategies/
-│   └── rsi_pengu_strategy.py       # Stochastic RSI strategy with Wilder's smoothing
+│   └── rsi_pengu_strategy.py       # Stochastic RSI strategy for LINK with Wilder's smoothing
 ├── hyperliquid_wrapper/
 │   └── hyperliquid_client.py       # API client with connection pooling
 ├── risk/

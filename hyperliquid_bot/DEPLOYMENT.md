@@ -12,7 +12,7 @@
 
 1. **Create Render Account**: https://render.com
 2. **Strategy Overview**: 
-   - **Active Strategy**: Stochastic RSI on PENGU
+   - **Active Strategy**: Stochastic RSI on LINK
    - **Indicators**: Stochastic RSI (combining RSI and Stochastic)
    - **Entry**: BUY when Stochastic RSI < 20 (oversold)
    - **Exit**: SELL when Stochastic RSI > 80 (overbought)
@@ -58,7 +58,7 @@ MAX_DRAWDOWN_PERCENT=50.0
 **Strategy Configuration**:
 ```
 STRATEGY_NAME=rsi_pengu
-SYMBOL=PENGU
+SYMBOL=LINK
 TIMEFRAME=30m
 RSI_PERIOD=14
 STOCH_PERIOD=14
@@ -137,7 +137,7 @@ DISCORD_ROI_INTERVAL=3600
 ```bash
 # Key log messages to watch for:
 ✅ "Bot execution started"
-✅ "Stochastic RSI PENGU Strategy initialized"
+✅ "Stochastic RSI LINK Strategy initialized"
 ✅ "Hyperliquid client connected"
 ✅ "All components initialized successfully"
 ✅ "BUY signal generated: Stochastic RSI=X.XX"

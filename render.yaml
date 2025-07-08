@@ -19,7 +19,7 @@ services:
       - key: STRATEGY_NAME
         value: rsi_pengu
       - key: SYMBOL
-        value: PENGU
+        value: LINK
       - key: TIMEFRAME
         value: 30m
       - key: RSI_PERIOD
