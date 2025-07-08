@@ -24,10 +24,12 @@ services:
         value: 30m
       - key: RSI_PERIOD
         value: 14
-      - key: RSI_OVERSOLD
-        value: 30
-      - key: RSI_OVERBOUGHT
-        value: 70
+      - key: STOCH_PERIOD
+        value: 14
+      - key: STOCH_RSI_OVERSOLD
+        value: 20
+      - key: STOCH_RSI_OVERBOUGHT
+        value: 80
       - key: LEVERAGE
         value: 10
       - key: POSITION_SIZE_PERCENT

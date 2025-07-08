@@ -32,8 +32,12 @@ class Config:
         self.symbol: str = os.getenv('SYMBOL', 'PENGU')
         self.timeframe: str = os.getenv('TIMEFRAME', '30m')
         
-        # RSI Strategy parameters
+        # Stochastic RSI Strategy parameters
         self.rsi_period: int = int(os.getenv('RSI_PERIOD', '14'))
+        self.stoch_period: int = int(os.getenv('STOCH_PERIOD', '14'))
+        self.stoch_rsi_oversold: float = float(os.getenv('STOCH_RSI_OVERSOLD', '20'))
+        self.stoch_rsi_overbought: float = float(os.getenv('STOCH_RSI_OVERBOUGHT', '80'))
+        # Legacy RSI parameters (kept for backward compatibility)
         self.rsi_oversold: float = float(os.getenv('RSI_OVERSOLD', '30'))
         self.rsi_overbought: float = float(os.getenv('RSI_OVERBOUGHT', '70'))
         
@@ -84,6 +88,19 @@ class Config:
         if self.rsi_period < 1:
             errors.append("RSI_PERIOD must be greater than 0")
             
+        if self.stoch_period < 1:
+            errors.append("STOCH_PERIOD must be greater than 0")
+            
+        if not (0 < self.stoch_rsi_oversold < 100):
+            errors.append("STOCH_RSI_OVERSOLD must be between 0 and 100")
+            
+        if not (0 < self.stoch_rsi_overbought < 100):
+            errors.append("STOCH_RSI_OVERBOUGHT must be between 0 and 100")
+            
+        if self.stoch_rsi_oversold >= self.stoch_rsi_overbought:
+            errors.append("STOCH_RSI_OVERSOLD must be less than STOCH_RSI_OVERBOUGHT")
+            
+        # Legacy RSI validation (kept for backward compatibility)
         if not (0 < self.rsi_oversold < 100):
             errors.append("RSI_OVERSOLD must be between 0 and 100")
             
