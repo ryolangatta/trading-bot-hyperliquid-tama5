@@ -22,7 +22,7 @@ async def main():
     """Main entry point for the trading bot"""
     parser = argparse.ArgumentParser(description='Hyperliquid Trading Bot')
     parser.add_argument('--config', default='.env', help='Path to config file')
-    parser.add_argument('--strategy', default='rsi_pengu', help='Strategy to run')
+    parser.add_argument('--strategy', default='stochastic_rsi_link', help='Strategy to run')
     parser.add_argument('--dry-run', action='store_true', help='Run in dry-run mode')
     parser.add_argument('--log-level', default='INFO', choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'])
     

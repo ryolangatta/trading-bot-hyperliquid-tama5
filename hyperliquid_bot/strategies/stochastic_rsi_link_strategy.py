@@ -94,7 +94,7 @@ class StochasticRSIStrategy:
         
         # Use Wilder's smoothing (EMA with alpha = 1/period) for proper RSI calculation
         # Initialize with SMA for first calculation
-        if not hasattr(self, '_rsi_avg_gains') or len(self.candles) <= period:
+        if not hasattr(self, '_rsi_avg_gains'):
             # First calculation uses SMA
             if len(gains) >= period:
                 self._rsi_avg_gains = np.mean(gains[-period:])

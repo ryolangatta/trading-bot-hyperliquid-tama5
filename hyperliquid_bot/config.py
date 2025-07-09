@@ -28,7 +28,7 @@ class Config:
         self.hyperliquid_vault_address: Optional[str] = os.getenv('HYPERLIQUID_VAULT_ADDRESS')
         
         # Strategy configuration
-        self.strategy_name: str = os.getenv('STRATEGY_NAME', 'rsi_pengu')
+        self.strategy_name: str = os.getenv('STRATEGY_NAME', 'stochastic_rsi_link')
         self.symbol: str = os.getenv('SYMBOL', 'LINK')
         self.timeframe: str = os.getenv('TIMEFRAME', '30m')
         

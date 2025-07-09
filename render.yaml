@@ -8,7 +8,7 @@ services:
     runtime: python3
     rootDirectory: hyperliquid_bot
     buildCommand: pip install -r requirements.txt
-    startCommand: python main.py --strategy rsi_pengu
+    startCommand: python main.py --strategy stochastic_rsi_link
     # Render background worker configuration
     
     # Environment variables (set these in Render dashboard)
@@ -18,7 +18,7 @@ services:
       - key: TESTNET
         value: false
       - key: STRATEGY_NAME
-        value: rsi_pengu
+        value: stochastic_rsi_link
       - key: SYMBOL
         value: LINK
       - key: TIMEFRAME
@@ -35,6 +35,8 @@ services:
         value: 10
       - key: POSITION_SIZE_PERCENT
         value: 1.0
+      - key: POSITION_SIZE_USD
+        value: 15.0
       - key: STOP_LOSS_PERCENT
         value: 2.5
       - key: CIRCUIT_BREAKER_ERRORS

@@ -144,7 +144,7 @@ hyperliquid_bot/
 ├── config.py                        # Configuration management
 ├── bot_orchestrator.py             # Main bot coordination
 ├── strategies/
-│   └── rsi_pengu_strategy.py       # Stochastic RSI strategy for LINK with Wilder's smoothing
+│   └── stochastic_rsi_link_strategy.py  # Stochastic RSI strategy for LINK with Wilder's smoothing
 ├── hyperliquid_wrapper/
 │   └── hyperliquid_client.py       # API client with connection pooling
 ├── risk/

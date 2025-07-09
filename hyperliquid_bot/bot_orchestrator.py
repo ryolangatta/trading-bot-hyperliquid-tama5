@@ -32,7 +32,7 @@ class RecoverableError(Exception):
     pass
 
 
-from strategies.rsi_pengu_strategy import StochasticRSIStrategy, Candle, Signal
+from strategies.stochastic_rsi_link_strategy import StochasticRSIStrategy, Candle, Signal
 from hyperliquid_wrapper.hyperliquid_client import HyperliquidClient
 from risk.fee_calculator import FeeCalculator
 from state.state_manager import StateManager, Position, Trade
@@ -162,7 +162,7 @@ class BotOrchestrator:
             self.logger.info("Initializing bot components...")
             
             # Initialize strategy
-            if self.strategy_name == 'rsi_pengu':
+            if self.strategy_name == 'stochastic_rsi_link':
                 self.strategy = StochasticRSIStrategy(self.config)
             else:
                 raise ValueError(f"Unknown strategy: {self.strategy_name}")
@@ -672,6 +672,7 @@ class BotOrchestrator:
                 'running': self.running,
                 'strategy': self.strategy_name,
                 'current_rsi': self.strategy.get_current_rsi(),
+                'current_stoch_rsi': self.strategy.get_current_stoch_rsi(),
                 'has_position': self.state_manager.get_current_position() is not None,
                 'uptime_seconds': uptime_seconds,
                 'recent_errors': self.error_monitor.get_error_count(1),
