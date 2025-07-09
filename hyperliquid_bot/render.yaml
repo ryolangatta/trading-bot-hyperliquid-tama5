@@ -34,6 +34,8 @@ services:
         value: 10
       - key: POSITION_SIZE_PERCENT
         value: 1.0
+      - key: POSITION_SIZE_USD
+        value: 15.0
       - key: STOP_LOSS_PERCENT
         value: 2.5
       - key: CIRCUIT_BREAKER_ERRORS

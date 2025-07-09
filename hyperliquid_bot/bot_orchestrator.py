@@ -401,16 +401,31 @@ class BotOrchestrator:
                 self.logger.warning("No available balance for trading")
                 return
                 
-            # Calculate position size based on risk percentage
-            risk_amount = available_balance * (self.config.position_size_percent / 100)
-            position_size = risk_amount * self.config.leverage
+            # Calculate position size - USD takes priority over percentage
+            if self.config.position_size_usd:
+                # Use fixed USD amount
+                position_size = self.config.position_size_usd / signal.price
+                self.logger.info(f"Using fixed USD position size: ${self.config.position_size_usd:.2f} = {position_size:.6f} {self.config.symbol}")
+            else:
+                # Use percentage-based sizing
+                risk_amount = available_balance * (self.config.position_size_percent / 100)
+                position_size = risk_amount * self.config.leverage / signal.price
+                self.logger.info(f"Using percentage position size: {self.config.position_size_percent}% of ${available_balance:.2f} = {position_size:.6f} {self.config.symbol}")
+            
+            # Check minimum position size (Hyperliquid requires minimum $10 notional)
+            notional_value = position_size * signal.price
+            min_notional = 10.0  # $10 minimum
+            if notional_value < min_notional:
+                self.logger.warning(f"Position size too small: ${notional_value:.2f} < ${min_notional:.2f} minimum. Adjusting to minimum.")
+                position_size = min_notional / signal.price
+                notional_value = min_notional
             
             # Check fee profitability
             expected_exit_price = signal.price * (1 + 0.05)  # Assume 5% profit target
             should_execute, fee_calc = self.fee_calculator.should_execute_trade(
                 entry_price=signal.price,
                 expected_exit_price=expected_exit_price,
-                position_size=position_size
+                position_size=position_size * signal.price  # fee_calculator expects USD value
             )
             
             if not should_execute:
