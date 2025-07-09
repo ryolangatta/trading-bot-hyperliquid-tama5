@@ -1,6 +1,6 @@
 # Hyperliquid Trading Bot v5.2.0
 
-A secure, professional-grade execution-only crypto trading bot for Hyperliquid using RSI mean reversion strategy on PENGU token.
+A secure, professional-grade execution-only crypto trading bot for Hyperliquid using Stochastic RSI strategy on LINK token.
 
 > **🚀 PRODUCTION READY** - All critical bugs fixed, comprehensive monitoring implemented, and security hardened for live deployment.
 
@@ -9,7 +9,7 @@ A secure, professional-grade execution-only crypto trading bot for Hyperliquid u
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd trading-bot-hyperliquid-tama4
+   cd trading-bot-hyperliquid-tama5
    ```
 
 2. **Install dependencies**
@@ -30,12 +30,12 @@ A secure, professional-grade execution-only crypto trading bot for Hyperliquid u
 
 ## 📊 Strategy Overview
 
-**Active Strategy:** RSI Mean Reversion on PENGU
-- **Token:** PENGU
+**Active Strategy:** Stochastic RSI on LINK
+- **Token:** LINK
 - **Timeframe:** 30-minute candles
 - **Position Type:** Long only
-- **Entry:** RSI < 30 (oversold)
-- **Exit:** RSI > 70 (overbought)
+- **Entry:** Stochastic RSI < 20 (oversold)
+- **Exit:** Stochastic RSI > 80 (overbought)
 - **Leverage:** 10x isolated
 - **Risk:** Fixed dollar amounts or 1-2% capital per trade (configurable)
 
@@ -43,7 +43,7 @@ A secure, professional-grade execution-only crypto trading bot for Hyperliquid u
 
 ### 🔧 Core Trading
 - ✅ **Live Trading** on Hyperliquid Mainnet/Testnet
-- ✅ **RSI Strategy** with industry-standard Wilder's smoothing
+- ✅ **Stochastic RSI Strategy** combining RSI with Stochastic overlay for enhanced sensitivity
 - ✅ **Fee Optimization** with high-precision decimal calculations
 - ✅ **Flexible Position Sizing** with dollar amounts and percentage options
 - ✅ **Stop Loss** protection (3% below entry)
@@ -71,11 +71,11 @@ A secure, professional-grade execution-only crypto trading bot for Hyperliquid u
 
 ## 📈 Performance Metrics
 
-- **Win Rate:** 70%
-- **Total Return:** +176% in 36 days
-- **Sharpe Ratio:** 0.59
-- **Profit Factor:** 2.27
-- **Max Drawdown:** -50%
+- **Win Rate:** 86.7% (13 wins out of 15 trades)
+- **Total Return:** +130.14%
+- **Sharpe Ratio:** 1.56 (excellent risk-adjusted returns)
+- **Win/Loss Ratio:** 6.50 (much more winning than losing trades)
+- **Max Drawdown:** -24.36%
 
 ## 🛠️ Configuration
 
@@ -113,8 +113,9 @@ DISCORD_WEBHOOK_URL=your_webhook_url
 
 # Strategy Parameters
 RSI_PERIOD=14
-RSI_OVERSOLD=30
-RSI_OVERBOUGHT=70
+STOCH_PERIOD=14
+STOCH_RSI_OVERSOLD=20
+STOCH_RSI_OVERBOUGHT=80
 LEVERAGE=10
 
 # Position Sizing (choose one method)
@@ -130,7 +131,7 @@ hyperliquid_bot/
 ├── config.py                        # Configuration management
 ├── bot_orchestrator.py             # Main bot coordination
 ├── strategies/
-│   └── rsi_pengu_strategy.py       # RSI strategy with Wilder's smoothing
+│   └── rsi_pengu_strategy.py       # Stochastic RSI strategy for LINK with Wilder's smoothing
 ├── hyperliquid_wrapper/
 │   └── hyperliquid_client.py       # API client with connection pooling
 ├── risk/
