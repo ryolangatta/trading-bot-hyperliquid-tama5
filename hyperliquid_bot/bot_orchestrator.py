@@ -32,7 +32,8 @@ class RecoverableError(Exception):
     pass
 
 
-from strategies.stochastic_rsi_link_strategy import StochasticRSIStrategy, Candle, Signal
+from strategies.stochastic_rsi_link_strategy import StochasticRSIStrategy
+from data_types import Candle, Signal
 from hyperliquid_wrapper.hyperliquid_client import HyperliquidClient
 from risk.fee_calculator import FeeCalculator
 from state.state_manager import StateManager, Position, Trade

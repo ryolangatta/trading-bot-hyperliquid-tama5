@@ -17,8 +17,8 @@ from dataclasses import dataclass
 from enum import Enum
 import aiohttp
 
-# Import Candle class for type consistency
-from strategies.stochastic_rsi_link_strategy import Candle
+# Import common data types
+from data_types import Candle, MarketData
 
 
 class ErrorType(Enum):
@@ -69,17 +69,6 @@ except ImportError as e:
     logging.error(f"Official hyperliquid-python-sdk not installed: {e}")
     logging.error("Please install with: pip install hyperliquid-python-sdk")
     raise
-
-
-@dataclass
-class MarketData:
-    """Market data representation"""
-    symbol: str
-    price: float
-    timestamp: datetime
-    bid: float
-    ask: float
-    volume_24h: float
 
 
 @dataclass

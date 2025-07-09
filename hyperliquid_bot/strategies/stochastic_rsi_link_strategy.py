@@ -9,29 +9,7 @@ from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from risk.fee_calculator import FeeCalculator
-
-
-@dataclass
-class Signal:
-    """Trading signal representation"""
-    action: str  # 'BUY', 'SELL', 'HOLD'
-    price: float
-    timestamp: datetime
-    stoch_rsi_value: float
-    rsi_value: float
-    confidence: float
-    reason: str
-
-
-@dataclass
-class Candle:
-    """OHLCV candle data"""
-    timestamp: datetime
-    open: float
-    high: float
-    low: float
-    close: float
-    volume: float
+from data_types import Candle, Signal
 
 
 class StochasticRSIStrategy:
