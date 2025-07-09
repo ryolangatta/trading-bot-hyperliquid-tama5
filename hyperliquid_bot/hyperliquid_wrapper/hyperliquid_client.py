@@ -18,7 +18,7 @@ from enum import Enum
 import aiohttp
 
 # Import Candle class for type consistency
-from strategies.rsi_pengu_strategy import Candle
+from strategies.stochastic_rsi_link_strategy import Candle
 
 
 class ErrorType(Enum):

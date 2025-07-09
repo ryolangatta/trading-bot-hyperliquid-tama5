@@ -38,7 +38,7 @@
    - **Region**: `Oregon` (lowest latency)
    - **Branch**: `master`
    - **Build Command**: `pip install -r requirements.txt`
-   - **Start Command**: `python main.py --strategy rsi_pengu`
+   - **Start Command**: `python main.py --strategy stochastic_rsi_link`
    - **Plan**: `Starter` ($7/month)
 
 #### Step 2: Environment Variables
@@ -57,7 +57,7 @@ MAX_DRAWDOWN_PERCENT=50.0
 
 **Strategy Configuration**:
 ```
-STRATEGY_NAME=rsi_pengu
+STRATEGY_NAME=stochastic_rsi_link
 SYMBOL=LINK
 TIMEFRAME=30m
 RSI_PERIOD=14

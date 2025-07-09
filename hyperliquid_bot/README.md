@@ -89,7 +89,7 @@ CIRCUIT_BREAKER_WINDOW_HOURS=1  # Time window for counting
 python main.py --dry-run --log-level DEBUG
 
 # Live trading
-python main.py --strategy rsi_pengu
+python main.py --strategy stochastic_rsi_link
 
 # With custom config
 python main.py --config production.env
@@ -100,7 +100,7 @@ python main.py --config production.env
 1. **Connect your repository** to Render
 2. **Create a Background Worker** with:
    - **Build Command**: `pip install -r requirements.txt`
-   - **Start Command**: `python main.py --strategy rsi_pengu`
+   - **Start Command**: `python main.py --strategy stochastic_rsi_link`
    - **Environment**: Add all variables from `.env`
 
 ### Docker Deployment (Optional)
@@ -169,7 +169,7 @@ hyperliquid_bot/
 ├── config.py               # Configuration management
 ├── bot_orchestrator.py     # Main execution engine
 ├── strategies/             # Trading strategies
-│   └── rsi_pengu_strategy.py
+│   └── stochastic_rsi_link_strategy.py
 ├── hyperliquid/           # API client wrapper
 │   └── hyperliquid_client.py
 ├── risk/                  # Risk management
