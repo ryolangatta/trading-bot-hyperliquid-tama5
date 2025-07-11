@@ -25,15 +25,10 @@ class Signal:
     action: str  # 'BUY', 'SELL', 'HOLD'
     price: float
     timestamp: datetime
+    stoch_rsi_value: float
+    rsi_value: float
     confidence: float
     reason: str
-    # Stochastic RSI fields (optional)
-    stoch_rsi_value: Optional[float] = None
-    rsi_value: Optional[float] = None
-    # MACD fields (optional)
-    macd_value: Optional[float] = None
-    signal_value: Optional[float] = None
-    histogram_value: Optional[float] = None
 
 
 @dataclass

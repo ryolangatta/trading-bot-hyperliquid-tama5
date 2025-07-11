@@ -38,41 +38,32 @@ Build a secure, professional-grade execution-only crypto trading bot for Hyperli
 
 ---
 
-## 📊 Active Strategy: MACD Strategy
+## 📊 Active Strategy: Stochastic RSI on LINK
 
-**Token:** ARB  
-**Timeframe:** 1 hour  
-**Position Type:** Long/Short  
-**Indicators:** MACD (12, 26, 9)
+**Token:** LINK  
+**Timeframe:** 30-minute candles  
+**Position Type:** Long only  
+**Indicators:** Stochastic RSI (combining RSI and Stochastic)
 
 ### Entry Rules
-- **Long Entry:** MACD line crosses above signal line AND MACD histogram turns positive
-- **Short Entry:** MACD line crosses below signal line AND MACD histogram turns negative
-- Additional confirmation: MACD line must be moving away from zero line
+- **BUY** when Stochastic RSI < 20 (oversold)
 
 ### Exit Rules
-- **Take Profit:** 2% gain from entry price
-- **Stop Loss:** 1% loss from entry price
-- **Signal Exit:** MACD line crosses back towards signal line (opposite direction)
+- **SELL** when Stochastic RSI > 80 (overbought)
 
 ### Parameters
-- **MACD Fast Period:** 12
-- **MACD Slow Period:** 26  
-- **MACD Signal Period:** 9
-- **Take Profit:** 2.0%
-- **Stop Loss:** 1.0%
-- **Position Hold Time:** Max 24 hours
+- RSI Period: 14
+- Stochastic Period: 14
+- Oversold Threshold: 20
+- Overbought Threshold: 80
 
 ### Strategy Mechanics
-- Calculate MACD line: EMA(12) - EMA(26)
-- Calculate Signal line: EMA(9) of MACD line
-- Calculate Histogram: MACD line - Signal line
-- Entry on crossover with histogram confirmation
-- Exit on TP/SL or reverse signal
+The StochasticRSI combines two momentum indicators:
+1. RSI (14-period): Measures price momentum
+2. Stochastic (14-period): Applied to RSI values for enhanced sensitivity
 
 ### Risk Management
-- Stop Loss: 1% below entry (optimized from backtesting)
-- Take Profit: 2% above entry (optimized from backtesting)
+- Stop Loss: 2–3% below entry (recommended)
 - Position Sizing: Fixed dollar amounts OR percentage-based (configurable)
   - **POSITION_SIZE_USD**: Fixed dollar amount per trade (e.g., $15.00)
   - **POSITION_SIZE_PERCENT**: 1–2% capital risked per trade (fallback)
@@ -81,12 +72,11 @@ Build a secure, professional-grade execution-only crypto trading bot for Hyperli
 - **Portfolio Heat / Correlation Checks: NOT USED**
 
 ### Performance Metrics
-- **ROI:** 1.25% over 18 days
-- **Sharpe Ratio:** 10.25 (excellent risk-adjusted returns)
-- **Win Rate:** 59.5%
-- **Max Drawdown:** 0.14%
-- **Total Trades:** 79 (backtested)
-- **Optimal SL/TP:** 1% stop loss, 2% take profit
+- Win Rate: 86.7% (13 wins out of 15 trades)
+- Total Return: +130.14%
+- Sharpe: 1.56 (excellent risk-adjusted returns)
+- Max Drawdown: -24.36%
+- Win/Loss Ratio: 6.50 (much more winning than losing trades)
 
 ---
 
@@ -154,7 +144,7 @@ hyperliquid_bot/
 ├── config.py                        # Configuration management
 ├── bot_orchestrator.py             # Main bot coordination
 ├── strategies/
-│   └── [strategy_file_to_be_created]  # New strategy implementation
+│   └── stochastic_rsi_link_strategy.py  # Stochastic RSI strategy for LINK with Wilder's smoothing
 ├── hyperliquid_wrapper/
 │   └── hyperliquid_client.py       # API client with connection pooling
 ├── risk/

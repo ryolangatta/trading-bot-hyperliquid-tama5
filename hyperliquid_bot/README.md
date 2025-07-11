@@ -111,7 +111,7 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 COPY . .
-CMD ["python", "main.py", "--strategy", "stochastic_rsi_link"]
+CMD ["python", "main.py", "--strategy", "rsi_pengu"]
 ```
 
 ## 📈 Monitoring

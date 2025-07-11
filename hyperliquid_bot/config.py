@@ -28,18 +28,11 @@ class Config:
         self.hyperliquid_vault_address: Optional[str] = os.getenv('HYPERLIQUID_VAULT_ADDRESS')
         
         # Strategy configuration
-        self.strategy_name: str = os.getenv('STRATEGY_NAME', 'macd_arb')
-        self.symbol: str = os.getenv('SYMBOL', 'ARB')
-        self.timeframe: str = os.getenv('TIMEFRAME', '1h')
+        self.strategy_name: str = os.getenv('STRATEGY_NAME', 'stochastic_rsi_link')
+        self.symbol: str = os.getenv('SYMBOL', 'LINK')
+        self.timeframe: str = os.getenv('TIMEFRAME', '30m')
         
-        # MACD Strategy parameters
-        self.macd_fast_period: int = int(os.getenv('MACD_FAST_PERIOD', '12'))
-        self.macd_slow_period: int = int(os.getenv('MACD_SLOW_PERIOD', '26'))
-        self.macd_signal_period: int = int(os.getenv('MACD_SIGNAL_PERIOD', '9'))
-        self.take_profit_percent: float = float(os.getenv('TAKE_PROFIT_PERCENT', '2.0'))
-        self.max_hold_hours: int = int(os.getenv('MAX_HOLD_HOURS', '24'))
-        
-        # Stochastic RSI Strategy parameters (for backward compatibility)
+        # Stochastic RSI Strategy parameters
         self.rsi_period: int = int(os.getenv('RSI_PERIOD', '14'))
         self.stoch_period: int = int(os.getenv('STOCH_PERIOD', '14'))
         self.stoch_rsi_oversold: float = float(os.getenv('STOCH_RSI_OVERSOLD', '20'))
@@ -52,7 +45,7 @@ class Config:
         # Risk management
         self.position_size_percent: float = float(os.getenv('POSITION_SIZE_PERCENT', '1.0'))
         self.position_size_usd: Optional[float] = float(os.getenv('POSITION_SIZE_USD')) if os.getenv('POSITION_SIZE_USD') else None
-        self.stop_loss_percent: float = float(os.getenv('STOP_LOSS_PERCENT', '1.0'))
+        self.stop_loss_percent: float = float(os.getenv('STOP_LOSS_PERCENT', '2.5'))
         self.max_drawdown_percent: float = float(os.getenv('MAX_DRAWDOWN_PERCENT', '50.0'))
         
         # Error handling
@@ -92,26 +85,7 @@ class Config:
         if not self.discord_webhook_url:
             errors.append("DISCORD_WEBHOOK_URL is required")
             
-        # MACD Strategy parameters validation
-        if self.macd_fast_period < 1:
-            errors.append("MACD_FAST_PERIOD must be greater than 0")
-            
-        if self.macd_slow_period < 1:
-            errors.append("MACD_SLOW_PERIOD must be greater than 0")
-            
-        if self.macd_signal_period < 1:
-            errors.append("MACD_SIGNAL_PERIOD must be greater than 0")
-            
-        if self.macd_fast_period >= self.macd_slow_period:
-            errors.append("MACD_FAST_PERIOD must be less than MACD_SLOW_PERIOD")
-            
-        if not (0 < self.take_profit_percent <= 20):
-            errors.append("TAKE_PROFIT_PERCENT must be between 0 and 20")
-            
-        if self.max_hold_hours < 1:
-            errors.append("MAX_HOLD_HOURS must be greater than 0")
-            
-        # Stochastic RSI Strategy parameters validation (for backward compatibility)
+        # Strategy parameters validation
         if self.rsi_period < 1:
             errors.append("RSI_PERIOD must be greater than 0")
             

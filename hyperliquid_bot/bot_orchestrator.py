@@ -33,7 +33,6 @@ class RecoverableError(Exception):
 
 
 from strategies.stochastic_rsi_link_strategy import StochasticRSIStrategy
-from strategies.macd_arb_strategy import MACDStrategy
 from data_types import Candle, Signal
 from hyperliquid_wrapper.hyperliquid_client import HyperliquidClient
 from risk.fee_calculator import FeeCalculator
@@ -166,8 +165,6 @@ class BotOrchestrator:
             # Initialize strategy
             if self.strategy_name == 'stochastic_rsi_link':
                 self.strategy = StochasticRSIStrategy(self.config)
-            elif self.strategy_name == 'macd_arb':
-                self.strategy = MACDStrategy(self.config)
             else:
                 raise ValueError(f"Unknown strategy: {self.strategy_name}")
                 
@@ -565,35 +562,15 @@ class BotOrchestrator:
             self.logger.warning(f"Executing stop loss at ${current_price:.4f}")
             
             # Create a sell signal for stop loss
-            if self.strategy_name == 'stochastic_rsi_link':
-                stop_loss_signal = Signal(
-                    action='SELL',
-                    price=current_price,
-                    timestamp=datetime.now(),
-                    stoch_rsi_value=self.strategy.get_current_stoch_rsi() or 0,
-                    rsi_value=self.strategy.get_current_rsi() or 0,
-                    confidence=1.0,
-                    reason="Stop loss triggered"
-                )
-            elif self.strategy_name == 'macd_arb':
-                stop_loss_signal = Signal(
-                    action='SELL',
-                    price=current_price,
-                    timestamp=datetime.now(),
-                    macd_value=self.strategy.get_current_macd() or 0,
-                    signal_value=self.strategy.get_current_signal() or 0,
-                    histogram_value=self.strategy.get_current_histogram() or 0,
-                    confidence=1.0,
-                    reason="Stop loss triggered"
-                )
-            else:
-                stop_loss_signal = Signal(
-                    action='SELL',
-                    price=current_price,
-                    timestamp=datetime.now(),
-                    confidence=1.0,
-                    reason="Stop loss triggered"
-                )
+            stop_loss_signal = Signal(
+                action='SELL',
+                price=current_price,
+                timestamp=datetime.now(),
+                stoch_rsi_value=self.strategy.get_current_stoch_rsi() or 0,
+                rsi_value=self.strategy.get_current_rsi() or 0,
+                confidence=1.0,
+                reason="Stop loss triggered"
+            )
             
             await self._execute_sell(stop_loss_signal)
             
@@ -607,35 +584,15 @@ class BotOrchestrator:
             self.logger.info(f"Processing manual {manual_signal.command} signal from {manual_signal.username}")
             
             # Create a trading signal from the manual command
-            if self.strategy_name == 'stochastic_rsi_link':
-                signal = Signal(
-                    action=manual_signal.command,  # 'BUY' or 'SELL'
-                    price=current_price,
-                    timestamp=datetime.now(),
-                    stoch_rsi_value=self.strategy.get_current_stoch_rsi() or 0,
-                    rsi_value=self.strategy.get_current_rsi() or 0,
-                    confidence=1.0,
-                    reason=f"Manual command from {manual_signal.username}"
-                )
-            elif self.strategy_name == 'macd_arb':
-                signal = Signal(
-                    action=manual_signal.command,  # 'BUY' or 'SELL'
-                    price=current_price,
-                    timestamp=datetime.now(),
-                    macd_value=self.strategy.get_current_macd() or 0,
-                    signal_value=self.strategy.get_current_signal() or 0,
-                    histogram_value=self.strategy.get_current_histogram() or 0,
-                    confidence=1.0,
-                    reason=f"Manual command from {manual_signal.username}"
-                )
-            else:
-                signal = Signal(
-                    action=manual_signal.command,  # 'BUY' or 'SELL'
-                    price=current_price,
-                    timestamp=datetime.now(),
-                    confidence=1.0,
-                    reason=f"Manual command from {manual_signal.username}"
-                )
+            signal = Signal(
+                action=manual_signal.command,  # 'BUY' or 'SELL'
+                price=current_price,
+                timestamp=datetime.now(),
+                stoch_rsi_value=self.strategy.get_current_stoch_rsi() or 0,
+                rsi_value=self.strategy.get_current_rsi() or 0,
+                confidence=1.0,
+                reason=f"Manual command from {manual_signal.username}"
+            )
             
             # Check current position status
             current_position = self.state_manager.get_current_position()
@@ -715,6 +672,8 @@ class BotOrchestrator:
             status_data = {
                 'running': self.running,
                 'strategy': self.strategy_name,
+                'current_rsi': self.strategy.get_current_rsi(),
+                'current_stoch_rsi': self.strategy.get_current_stoch_rsi(),
                 'has_position': self.state_manager.get_current_position() is not None,
                 'uptime_seconds': uptime_seconds,
                 'recent_errors': self.error_monitor.get_error_count(1),
@@ -722,15 +681,6 @@ class BotOrchestrator:
                 'wallet_balance': wallet_balance,
                 'available_balance': available_balance
             }
-            
-            # Add strategy-specific indicators
-            if self.strategy_name == 'stochastic_rsi_link':
-                status_data['current_rsi'] = self.strategy.get_current_rsi()
-                status_data['current_stoch_rsi'] = self.strategy.get_current_stoch_rsi()
-            elif self.strategy_name == 'macd_arb':
-                status_data['current_macd'] = self.strategy.get_current_macd()
-                status_data['current_signal'] = self.strategy.get_current_signal()
-                status_data['current_histogram'] = self.strategy.get_current_histogram()
             
             await self.discord_notifier.send_bot_status(status_data)
             
