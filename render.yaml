@@ -6,9 +6,8 @@ services:
     name: hyperliquid-trading-bot
     env: python
     runtime: python3
-    rootDirectory: hyperliquid_bot
     buildCommand: pip install -r requirements.txt
-    startCommand: python main.py --strategy stochastic_rsi_link
+    startCommand: python hyperliquid_bot/main.py --strategy stochastic_rsi_link
     # Render background worker configuration
     
     # Environment variables (set these in Render dashboard)

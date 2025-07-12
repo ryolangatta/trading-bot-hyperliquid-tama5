@@ -66,7 +66,6 @@ class BotOrchestrator:
         self.start_time = datetime.now()
         self.last_candle_time = None
         self.last_status_update = datetime.now()
-        self.last_roi_update = datetime.now()
         
         # Statistics
         self.total_signals = 0
@@ -642,25 +641,20 @@ class BotOrchestrator:
             self.logger.error(f"Error sending manual signal feedback: {e}")
             
     async def _send_periodic_updates(self) -> None:
-        """Send periodic status updates"""
+        """Send periodic status updates with ROI graphs"""
         try:
             current_time = datetime.now()
             
-            # Status updates every 10 minutes
+            # Status updates with ROI graphs every 10 minutes
             if (current_time - self.last_status_update).total_seconds() >= self.config.discord_status_interval:
                 await self._send_status_update()
                 self.last_status_update = current_time
-                
-            # ROI updates every hour
-            if (current_time - self.last_roi_update).total_seconds() >= self.config.discord_roi_interval:
-                await self._send_roi_update()
-                self.last_roi_update = current_time
                 
         except Exception as e:
             self.logger.error(f"Error sending periodic updates: {e}")
             
     async def _send_status_update(self) -> None:
-        """Send bot status update"""
+        """Send bot status update with ROI graph"""
         try:
             uptime_seconds = (datetime.now() - self.start_time).total_seconds()
             
@@ -669,27 +663,7 @@ class BotOrchestrator:
             wallet_balance = account_info.get('balance', 0)
             available_balance = account_info.get('available_balance', 0)
             
-            status_data = {
-                'running': self.running,
-                'strategy': self.strategy_name,
-                'current_rsi': self.strategy.get_current_rsi(),
-                'current_stoch_rsi': self.strategy.get_current_stoch_rsi(),
-                'has_position': self.state_manager.get_current_position() is not None,
-                'uptime_seconds': uptime_seconds,
-                'recent_errors': self.error_monitor.get_error_count(1),
-                'circuit_breaker_active': self.error_monitor.is_circuit_breaker_active(),
-                'wallet_balance': wallet_balance,
-                'available_balance': available_balance
-            }
-            
-            await self.discord_notifier.send_bot_status(status_data)
-            
-        except Exception as e:
-            self.logger.error(f"Error sending status update: {e}")
-            
-    async def _send_roi_update(self) -> None:
-        """Send ROI performance update"""
-        try:
+            # Get ROI data for the status update with graph
             roi_data = self.state_manager.get_performance_summary()
             recent_trades = self.state_manager.get_recent_trades(30)  # Last 30 days
             
@@ -702,11 +676,26 @@ class BotOrchestrator:
                     'fees': trade.fees,
                     'roi': trade.roi
                 })
-                
-            await self.discord_notifier.send_roi_graph(roi_data, trade_history)
+            
+            status_data = {
+                'running': self.running,
+                'strategy': self.strategy_name,
+                'current_rsi': self.strategy.get_current_rsi(),
+                'current_stoch_rsi': self.strategy.get_current_stoch_rsi(),
+                'has_position': self.state_manager.get_current_position() is not None,
+                'uptime_seconds': uptime_seconds,
+                'recent_errors': self.error_monitor.get_error_count(1),
+                'circuit_breaker_active': self.error_monitor.is_circuit_breaker_active(),
+                'wallet_balance': wallet_balance,
+                'available_balance': available_balance,
+                'roi_data': roi_data,
+                'trade_history': trade_history
+            }
+            
+            await self.discord_notifier.send_bot_status(status_data)
             
         except Exception as e:
-            self.logger.error(f"Error sending ROI update: {e}")
+            self.logger.error(f"Error sending status update: {e}")
             
     async def cleanup(self) -> None:
         """Cleanup resources"""

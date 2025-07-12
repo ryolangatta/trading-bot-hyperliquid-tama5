@@ -35,9 +35,8 @@ class DiscordNotifier:
         self.logger = logging.getLogger(__name__)
         self.webhook_url = config.discord_webhook_url
         
-        # Status tracking - bot status updates every 10 minutes, ROI graphs every hour
+        # Status tracking - bot status updates with ROI graphs every 10 minutes
         self.last_status_update = datetime.now()
-        self.last_roi_update = datetime.now()
         
         # Discord rate limiting (30 requests per minute)
         self.rate_limit_window = 60  # seconds
@@ -109,7 +108,7 @@ class DiscordNotifier:
                     "color": message.color,
                     "timestamp": datetime.now().isoformat(),
                     "footer": {
-                        "text": "Hyperliquid Trading Bot v5.0.0"
+                        "text": "Hyperliquid Trading Bot v5.2.0"
                     }
                 }
                 
@@ -182,7 +181,7 @@ class DiscordNotifier:
         return False
             
     async def send_bot_status(self, status_data: Dict[str, Any]) -> None:
-        """Send bot status update"""
+        """Send bot status update with ROI graph"""
         try:
             current_time = datetime.now()
             
@@ -200,6 +199,28 @@ class DiscordNotifier:
             wallet_balance = status_data.get('wallet_balance', 0)
             available_balance = status_data.get('available_balance', 0)
             
+            # Generate ROI chart if ROI data is available
+            chart_data = None
+            roi_fields = {}
+            roi_data = status_data.get('roi_data')
+            trade_history = status_data.get('trade_history', [])
+            
+            if roi_data and trade_history:
+                chart_data = self._generate_roi_chart(roi_data, trade_history)
+                
+                # Add ROI summary fields to status
+                total_roi = roi_data.get('total_roi', 0) or 0
+                current_balance = roi_data.get('current_balance', 0) or 0
+                win_rate = roi_data.get('win_rate', 0) or 0
+                total_trades = roi_data.get('total_trades', 0) or 0
+                
+                roi_fields = {
+                    "📈 Total ROI": f"{total_roi:.2f}%",
+                    "🏆 Win Rate": f"{win_rate:.1f}%",
+                    "📊 Total Trades": str(total_trades)
+                }
+            
+            # Combine status fields with ROI fields
             fields = {
                 "Status": "🟢 RUNNING" if status_data.get('running') else "🔴 STOPPED",
                 "Mode": "📊 LIVE" if not self.config.dry_run else "🧪 DRY RUN",
@@ -208,6 +229,7 @@ class DiscordNotifier:
                 "Stochastic RSI": stoch_rsi_display,
                 "RSI": rsi_display,
                 "Position": "📈 LONG" if status_data.get('has_position') else "💰 NO POSITION",
+                **roi_fields,  # Include ROI summary fields
                 "Wallet Balance": f"${wallet_balance:,.2f} USDT",
                 "Available": f"${available_balance:,.2f} USDT",
                 "Uptime": self._format_duration(status_data.get('uptime_seconds', 0)),
@@ -216,10 +238,11 @@ class DiscordNotifier:
             }
             
             message = NotificationMessage(
-                title="🤖 Bot Status Update",
-                description=f"Hyperliquid Trading Bot Status - {current_time.strftime('%Y-%m-%d %H:%M:%S UTC')}",
+                title="🤖 Bot Status Update with ROI Graph",
+                description=f"Hyperliquid Trading Bot Status & Performance - {current_time.strftime('%Y-%m-%d %H:%M:%S UTC')}",
                 color=self.colors['info'],
-                fields=fields
+                fields=fields,
+                image_data=chart_data  # Include ROI chart
             )
             
             await self.send_notification(message)
@@ -227,52 +250,6 @@ class DiscordNotifier:
             
         except Exception as e:
             self.logger.error(f"Failed to send bot status: {e}")
-            
-    async def send_roi_graph(self, roi_data: Dict[str, Any], trade_history: list) -> None:
-        """Send ROI graph to Discord"""
-        try:
-            current_time = datetime.now()
-            
-            # Check if it's time for ROI update
-            if (current_time - self.last_roi_update).total_seconds() < self.config.discord_roi_interval:
-                return
-                
-            # Generate ROI chart
-            chart_data = self._generate_roi_chart(roi_data, trade_history)
-            
-            if not chart_data:
-                self.logger.warning("No ROI data available for chart")
-                return
-                
-            # Handle None values safely for ROI data
-            total_roi = roi_data.get('total_roi', 0) or 0
-            current_balance = roi_data.get('current_balance', 0) or 0
-            win_rate = roi_data.get('win_rate', 0) or 0
-            max_drawdown = roi_data.get('max_drawdown', 0) or 0
-            total_fees = roi_data.get('total_fees', 0) or 0
-            
-            fields = {
-                "Total ROI": f"{total_roi:.2f}%",
-                "Current Balance": f"${current_balance:.2f}",
-                "Total Trades": roi_data.get('total_trades', 0) or 0,
-                "Win Rate": f"{win_rate:.1f}%",
-                "Max Drawdown": f"{max_drawdown:.2f}%",
-                "Total Fees": f"${total_fees:.2f}"
-            }
-            
-            message = NotificationMessage(
-                title="📈 ROI Performance Update",
-                description=f"Trading Performance - {current_time.strftime('%Y-%m-%d %H:%M:%S UTC')}",
-                color=self.colors['roi'],
-                fields=fields,
-                image_data=chart_data
-            )
-            
-            await self.send_notification(message)
-            self.last_roi_update = current_time
-            
-        except Exception as e:
-            self.logger.error(f"Failed to send ROI graph: {e}")
             
     async def send_trade_alert(self, trade_data: Dict[str, Any]) -> None:
         """Send trade execution alert"""

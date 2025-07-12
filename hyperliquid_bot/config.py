@@ -57,7 +57,6 @@ class Config:
         # Discord notifications
         self.discord_webhook_url: str = os.getenv('DISCORD_WEBHOOK_URL', '')
         self.discord_status_interval: int = int(os.getenv('DISCORD_STATUS_INTERVAL', '600'))  # 10 minutes
-        self.discord_roi_interval: int = int(os.getenv('DISCORD_ROI_INTERVAL', '3600'))  # 1 hour
         
         # Logging
         self.log_level: str = os.getenv('LOG_LEVEL', 'INFO')

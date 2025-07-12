@@ -1,7 +1,7 @@
 # CLAUDE.MD – Hyperliquid Trading Bot Specification
 
 **Version:** 5.2.0  
-**Last Updated:** 2025-07-08
+**Last Updated:** 2025-07-12
 
 ---
 
@@ -32,9 +32,11 @@ Build a secure, professional-grade execution-only crypto trading bot for Hyperli
 - DRY_RUN + LIVE mode toggle via `.env`
 - Real orders via `hyperliquid-python-sdk` using API wallet
 - Deployable to Render (background worker) or local PC
-- Real-time Discord alerts + ROI tracking
-- Sends **bot status updates to Discord every 10 minutes**
-- Sends **accumulated ROI graph to Discord every hour**
+- **Enhanced Discord Integration**: Real-time alerts + advanced ROI tracking
+- Sends **comprehensive bot status updates with ROI graph every 10 minutes**
+  - Bot health, strategy metrics, position status, wallet balance
+  - Integrated ROI summary (Total ROI %, Win Rate %, Total Trades)
+  - Visual ROI performance chart with trade history
 
 ---
 
@@ -106,6 +108,33 @@ The StochasticRSI combines two momentum indicators:
 
 ---
 
+## 📲 Discord Notification System (ENHANCED)
+
+### ✅ Enhanced Status Updates (Every 10 Minutes)
+- **Comprehensive bot monitoring** with real-time ROI visualization
+- **Included metrics:**
+  - Bot status (running/stopped), mode (live/dry run), environment
+  - Strategy performance (Stochastic RSI, RSI values)
+  - Position status and wallet balance information
+  - **ROI Performance Summary**: Total ROI %, Win Rate %, Total Trades
+  - **Visual ROI Chart**: Performance graph with trade history
+  - System health (uptime, errors, circuit breaker status)
+
+
+### ✅ Real-Time Trade Alerts
+- **Instant notifications** for all trade executions (BUY/SELL)
+- **Trade details**: Symbol, action, price, size, P&L, fees
+- **Account updates**: Wallet balance and available funds
+- **Risk monitoring**: Position status and leverage information
+
+### ✅ Technical Implementation
+- **Rate limiting**: 30 requests/minute with exponential backoff
+- **Error handling**: Graceful fallback for network issues
+- **Chart generation**: matplotlib-based ROI visualization
+- **Data persistence**: Trade history and performance tracking
+
+---
+
 ## 🚀 Production Features (IMPLEMENTED)
 
 ### ✅ Core Production Components
@@ -114,6 +143,8 @@ The StochasticRSI combines two momentum indicators:
 - `production_hardening.py`: Security validation and deployment hardening
 - `fee_calculator.py`: High-precision decimal arithmetic for fees
 - `plot_roi.py`: Real-time ROI chart generation for Discord
+- `manual_signal.py`: Manual trading system with market order execution
+- `discord_notifier.py`: Enhanced notification system with ROI visualization
 
 ### ✅ Security & Stability
 - **Atomic file operations** with fcntl locking to prevent data corruption

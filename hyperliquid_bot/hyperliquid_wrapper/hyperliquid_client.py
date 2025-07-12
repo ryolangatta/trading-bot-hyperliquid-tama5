@@ -124,11 +124,15 @@ class HyperliquidClient:
                 try:
                     wallet = Account.from_key(config.hyperliquid_private_key)
                     self.logger.info(f"Wallet created successfully - Address: {wallet.address}")
-                    self.exchange = Exchange(
-                        wallet=wallet,
-                        base_url=self._get_base_url(),
-                        vault_address=config.hyperliquid_vault_address
-                    )
+                    # Only pass vault_address if it's actually configured
+                    exchange_kwargs = {
+                        'wallet': wallet,
+                        'base_url': self._get_base_url()
+                    }
+                    if config.hyperliquid_vault_address:
+                        exchange_kwargs['vault_address'] = config.hyperliquid_vault_address
+                    
+                    self.exchange = Exchange(**exchange_kwargs)
                     self.logger.info("Exchange client initialized successfully")
                 except Exception as e:
                     self.logger.error(f"Failed to create wallet from private key: {e}")
@@ -413,13 +417,14 @@ class HyperliquidClient:
         try:
             if self.config.dry_run:
                 # Simulate order execution in dry run mode
-                self.logger.info(f"DRY RUN: {side} {size} {symbol} @ ${price if price else 'market'}")
+                price_str = f"${price}" if price else "market price"
+                self.logger.info(f"DRY RUN: {side} {size} {symbol} @ {price_str}")
                 return OrderResult(
                     success=True,
                     order_id=f"dry_run_{int(time.time())}",
                     error_message=None,
                     filled_size=size,
-                    filled_price=price or 0,
+                    filled_price=float(price) if price is not None else 0.0,
                     fees=size * 0.0002  # Estimate fees
                 )
                 
@@ -427,16 +432,79 @@ class HyperliquidClient:
                 raise ValueError("Exchange client not initialized - missing private key")
                 
             async def _place_order():
-                # Import required types
-                from hyperliquid.utils.signing import OrderType
+                # Import required types and modules
+                from hyperliquid.utils.signing import OrderType, float_to_wire
+                from hyperliquid.utils.types import Cloid
+                
+                # Get symbol-specific decimal places from SDK metadata
+                meta = await asyncio.to_thread(self.info.meta)
+                sz_decimals = 5  # Default to 5 decimal places
+                
+                # Find symbol in meta data for size decimals
+                for universe_item in meta.get('universe', []):
+                    if universe_item.get('name') == symbol:
+                        sz_decimals = universe_item.get('szDecimals', 5)
+                        break
+                
+                # Round size to appropriate decimal places to avoid float_to_wire errors
+                sz = round(size, sz_decimals)
+                self.logger.debug(f"Rounded size from {size} to {sz} ({sz_decimals} decimals)")
+                
+                # Round price if provided (Hyperliquid uses 5 significant figures for price)
+                if price is not None:
+                    # Get price decimals from significant figures
+                    # For prices >= 1, use appropriate decimal places
+                    # For prices < 1, use more decimal places
+                    if price >= 1000:
+                        price_decimals = 1
+                    elif price >= 100:
+                        price_decimals = 2
+                    elif price >= 10:
+                        price_decimals = 3
+                    elif price >= 1:
+                        price_decimals = 4
+                    else:
+                        price_decimals = 5
+                    
+                    limit_px = round(price, price_decimals)
+                    self.logger.debug(f"Rounded price from {price} to {limit_px} ({price_decimals} decimals)")
+                else:
+                    limit_px = None
                 
                 # Place order using official SDK with correct parameters
                 is_buy = side.lower() == 'buy'
-                sz = size
-                limit_px = price
                 
-                # Create proper OrderType structure based on order_type
-                if order_type.lower() == 'limit':
+                # For market orders, we need to handle them differently
+                if order_type.lower() == 'market':
+                    # For market orders on Hyperliquid, use a limit order with aggressive pricing
+                    # This ensures immediate execution
+                    market_data = await self.get_market_data(symbol)
+                    if is_buy:
+                        # For market buy, use ask price + 5% to ensure execution
+                        limit_px = market_data.ask * 1.05
+                    else:
+                        # For market sell, use bid price - 5% to ensure execution
+                        limit_px = market_data.bid * 0.95
+                    
+                    # Round the aggressive price properly
+                    if limit_px >= 1000:
+                        price_decimals = 1
+                    elif limit_px >= 100:
+                        price_decimals = 2
+                    elif limit_px >= 10:
+                        price_decimals = 3
+                    elif limit_px >= 1:
+                        price_decimals = 4
+                    else:
+                        price_decimals = 5
+                    
+                    limit_px = round(limit_px, price_decimals)
+                    self.logger.debug(f"Market order - using aggressive limit price: {limit_px}")
+                    
+                    # Use IOC (Immediate or Cancel) for market-like behavior
+                    order_type_obj = {"limit": {"tif": "Ioc"}}
+                    
+                elif order_type.lower() == 'limit':
                     # Convert time_in_force to proper format
                     tif_map = {
                         'GTC': 'Gtc',  # Good till canceled
@@ -444,22 +512,26 @@ class HyperliquidClient:
                         'ALO': 'Alo'   # Add liquidity only
                     }
                     tif = tif_map.get(time_in_force.upper(), 'Gtc')
+                    # Use proper SDK OrderType structure as dict
                     order_type_obj = {"limit": {"tif": tif}}
                 else:
-                    # For market orders or other types, use trigger with market
-                    order_type_obj = {"trigger": {"isMarket": True, "tpsl": "tp"}}
+                    # Default to limit order with GTC
+                    order_type_obj = {"limit": {"tif": "Gtc"}}
+                
+                # Log the order parameters for debugging
+                self.logger.debug(f"Order params - Symbol: {symbol}, Buy: {is_buy}, Size: {sz}")
+                self.logger.debug(f"Price type: {type(limit_px)}, Price value: {limit_px}")
+                self.logger.debug(f"Order type object: {order_type_obj}")
                 
                 # Use the correct SDK method signature
+                # The SDK expects positional arguments in this order
                 result = await asyncio.to_thread(
                     self.exchange.order,
-                    symbol,       # name (asset symbol)
-                    is_buy,       # is_buy
-                    sz,           # sz (size)
-                    limit_px,     # limit_px (price)
-                    order_type_obj, # order_type (OrderType structure)
-                    False,        # reduce_only (default False)
-                    None,         # cloid (client order ID, optional)
-                    None          # builder (builder info, optional)
+                    symbol,         # coin
+                    is_buy,         # is_buy
+                    sz,             # sz (size)
+                    limit_px,       # limit_px (price)
+                    order_type_obj  # order_type
                 )
                 
                 # Log the raw result for debugging
@@ -470,13 +542,50 @@ class HyperliquidClient:
                     if result.get('status') == 'ok':
                         response_data = result.get('response', {}).get('data', {})
                         
+                        # Parse order status - can be 'resting', 'filled', 'error', etc.
+                        order_id = None
+                        filled_size = 0.0
+                        filled_price = 0.0
+                        fees = 0.0
+                        
+                        statuses = response_data.get('statuses', [])
+                        if statuses:
+                            status = statuses[0]
+                            
+                            # Check for resting order (limit order placed but not filled)
+                            if 'resting' in status:
+                                order_id = str(status['resting']['oid'])
+                                self.logger.info(f"Order placed successfully - ID: {order_id} (resting/unfilled)")
+                                
+                            # Check for filled order
+                            elif 'filled' in status:
+                                filled_info = status['filled']
+                                order_id = str(filled_info.get('oid', ''))
+                                filled_size = float(filled_info.get('totalSz', 0))
+                                filled_price = float(filled_info.get('avgPx', 0))
+                                fees = float(filled_info.get('fee', 0))
+                                self.logger.info(f"Order filled - ID: {order_id}, Size: {filled_size}, Price: {filled_price}")
+                                
+                            # Check for error
+                            elif 'error' in status:
+                                error_msg = status['error']
+                                self.logger.error(f"Order error: {error_msg}")
+                                return OrderResult(
+                                    success=False,
+                                    order_id=None,
+                                    error_message=error_msg,
+                                    filled_size=0,
+                                    filled_price=0,
+                                    fees=0
+                                )
+                        
                         return OrderResult(
                             success=True,
-                            order_id=response_data.get('oid'),
+                            order_id=order_id,
                             error_message=None,
-                            filled_size=float(response_data.get('totalSz', 0)),
-                            filled_price=float(response_data.get('avgPx', 0)),
-                            fees=float(response_data.get('fee', 0))
+                            filled_size=filled_size,
+                            filled_price=filled_price,
+                            fees=fees
                         )
                     else:
                         error_msg = result.get('error', 'Unknown error')

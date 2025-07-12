@@ -1,26 +1,28 @@
-# Hyperliquid Trading Bot v5.0.0
+# Hyperliquid Trading Bot v5.2.0
 
-Professional-grade automated trading bot for Hyperliquid DEX with RSI Mean Reversion strategy.
+Professional-grade automated trading bot for Hyperliquid DEX with Stochastic RSI strategy.
 
 ## 🚀 Features
 
 - **Professional Architecture**: Async Python with modular design
-- **RSI Strategy**: Mean reversion on PENGU with 70% win rate
+- **Stochastic RSI Strategy**: Long-only momentum trading on LINK with 86.7% win rate
 - **Fee Optimization**: Filters unprofitable trades before execution
 - **Error Handling**: Circuit breaker with configurable thresholds
 - **State Management**: Restart-safe position and ROI persistence
-- **Discord Alerts**: Real-time notifications and ROI graphs
+- **Enhanced Discord Integration**: Real-time alerts with ROI visualization
+  - Status updates with ROI graphs every 10 minutes
+  - Instant trade execution notifications
 - **Dual Deployment**: Works on Render and local environments
 - **Production Ready**: Comprehensive logging and monitoring
 
-## 📊 Strategy Performance
+## 📊 Strategy Performance (Stochastic RSI on LINK)
 
-- **Win Rate**: 70% (14/20 trades)
-- **Total Return**: +176% over 36 days
-- **Sharpe Ratio**: 0.59
-- **Profit Factor**: 2.27
-- **Max Drawdown**: -50%
-- **Trade Frequency**: ~1 trade every 1.8 days
+- **Win Rate**: 86.7% (13 wins out of 15 trades)
+- **Total Return**: +130.14%
+- **Sharpe Ratio**: 1.56 (excellent risk-adjusted returns)
+- **Win/Loss Ratio**: 6.50
+- **Max Drawdown**: -24.36%
+- **Trade Frequency**: Momentum-based (oversold/overbought signals)
 
 ## 🛠️ Installation
 
@@ -80,6 +82,31 @@ CIRCUIT_BREAKER_ERRORS=5        # Errors before pause
 CIRCUIT_BREAKER_WINDOW_HOURS=1  # Time window for counting
 ```
 
+## 📲 Discord Notifications
+
+The bot provides comprehensive Discord integration with enhanced ROI tracking:
+
+### 🤖 Enhanced Status Updates (Every 10 Minutes)
+- **Bot Health Monitoring**: Real-time status, uptime, error tracking
+- **Strategy Metrics**: Current Stochastic RSI and RSI values
+- **Position & Balance**: Current positions and wallet information
+- **ROI Performance**: Total ROI %, Win Rate %, Total Trades
+- **Visual ROI Chart**: Interactive performance graph with trade history
+
+
+### 🔔 Real-Time Trade Alerts
+- **Instant Notifications**: Immediate alerts for all trade executions
+- **Trade Details**: Symbol, action, price, size, P&L, fees
+- **Account Updates**: Real-time wallet balance and available funds
+- **Risk Monitoring**: Position status and leverage tracking
+
+### ⚙️ Configuration
+```env
+# Discord Settings
+DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/...
+DISCORD_STATUS_INTERVAL=600      # Status updates every 10 minutes
+```
+
 ## 🚀 Usage
 
 ### Local Deployment
@@ -111,17 +138,32 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 COPY . .
-CMD ["python", "main.py", "--strategy", "rsi_pengu"]
+CMD ["python", "main.py", "--strategy", "stochastic_rsi_link"]
 ```
 
-## 📈 Monitoring
+## 🎯 Manual Trading
 
-### Discord Notifications
+For testing and manual intervention, the bot includes a manual signal system:
 
-- **Status Updates**: Every 10 minutes
-- **ROI Graphs**: Every hour
-- **Trade Alerts**: Real-time
-- **Error Alerts**: Immediate
+### Manual Signal Commands
+```bash
+# Send manual BUY signal at market price
+python manual_signal.py buy 0 "Manual test buy"
+
+# Send manual SELL signal at market price  
+python manual_signal.py sell 0 "Manual test sell"
+
+# Check bot status and account balance
+python manual_signal.py status
+```
+
+### Features
+- **Market Order Execution**: Uses IOC limit orders with aggressive pricing for immediate fills
+- **Position Management**: Automatically calculates position sizes and validates minimum requirements
+- **Risk Validation**: Confirms live trading operations with user prompts
+- **State Integration**: Updates bot state and ROI tracking
+
+## 📈 Monitoring & Observability
 
 ### Logging
 
@@ -255,6 +297,26 @@ Discord provides:
 ```bash
 python main.py --log-level DEBUG --dry-run
 ```
+
+## 📝 Changelog
+
+### v5.2.0 (Latest) - Enhanced Discord ROI Integration
+- ✅ **Enhanced Status Updates**: Added ROI graphs to 10-minute status updates
+- ✅ **Market Order Implementation**: Fixed float_to_wire errors with proper decimal rounding
+- ✅ **Manual Signal System**: Added manual BUY/SELL commands with market order execution
+- ✅ **Improved Documentation**: Updated CLAUDE.md and README with detailed specifications
+- ✅ **Production Ready**: Comprehensive error handling and circuit breaker integration
+
+### v5.1.0 - Stochastic RSI Strategy
+- ✅ **Strategy Migration**: Migrated from RSI to Stochastic RSI on LINK
+- ✅ **Performance Optimization**: 86.7% win rate with 1.56 Sharpe ratio
+- ✅ **Risk Management**: Enhanced position sizing and stop loss implementation
+
+### v5.0.0 - Production Foundation
+- ✅ **Professional Architecture**: Async Python with modular design
+- ✅ **Official SDK Integration**: Hyperliquid Python SDK implementation
+- ✅ **Production Features**: Error monitoring, health checks, state management
+- ✅ **Discord Integration**: Real-time notifications and basic ROI tracking
 
 ## 📄 License
 
